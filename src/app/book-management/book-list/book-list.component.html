@@ -1,0 +1,65 @@
+<!-- Navbar -->
+<header class="navbar">
+  <h1 class="logo">📚 Book Management System</h1>
+</header>
+
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-content">
+      <h1>Welcome to the Book Management System</h1>
+      <p>Organize your books effortlessly. Add, update, and manage your book collection.</p>
+  </div>
+</section>
+
+<!-- Features Section --> 
+<section class="features">
+  <div class="feature-card">
+      <h2>📖 Book List</h2>
+      <p>View and manage all your books in a single place.</p>
+
+      <!-- Books Table (Visible when books exist) -->
+      <div *ngIf="this.booksToDisplay.length > 0" class="book-table-container">
+     
+          <table class="book-table">
+              <thead>
+                  <tr>
+                      <th>Title</th>
+                      <th>Author</th>
+                      <th>ISBN</th>
+                      <th>Price</th>
+                      <th>Publication Date</th>
+                      <th>Genre</th>
+                      <th>Actions</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr *ngFor="let book of booksToDisplay;">
+                      <td>{{ book.title }}</td>
+                      <td>{{ book.author }}</td>
+                      <td>{{ book.isbn }}</td>
+                      <td>{{ book.price }}</td>
+                      <td>{{ book.pubDate | date:'yyyy-MM-dd' }}</td>
+                      <td>{{ book.genre }}</td>
+                      <td class="actions">
+                          <!-- <button (click)="editBookClicked(book.isbn)">✏️ Edit</button> -->
+                          <button (click)="deleteBookClicked(book.isbn)">❌ Delete</button>
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+      </div>
+
+      <!-- No Books Message -->
+      <div *ngIf="!booksToDisplay || booksToDisplay.length === 0" class="no-books">
+        <p>No Books available. Please add some books...</p>
+    </div>
+    
+
+       
+  </div>
+
+  <div class="feature-card">
+      <button routerLink="/book-management/add" class="add-book-btn">➕ Add Books</button>
+      <p>Add new books with ease using our simple form.</p>
+  </div>
+</section>
