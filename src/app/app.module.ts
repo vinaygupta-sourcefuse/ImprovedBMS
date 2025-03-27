@@ -10,6 +10,7 @@ import { BookListComponent } from './book-management/book-list/book-list.compone
 import { CommonModule } from '@angular/common';
 import { BookFormComponent } from './book-management/book-form/book-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { FormUnsavedChangesGuard } from './guards/form-unsaved-changes.guard';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     CommonModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [FormUnsavedChangesGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -5,6 +5,7 @@ import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { BookManagerService } from 'src/app/services/book-manager.service';
+import { title } from 'process';
 
 @Component({
   selector: 'app-book-form',
@@ -19,6 +20,7 @@ export class BookFormComponent {
   bookForm: FormGroup;
   books$ = new Observable<Book[]>(); // Store book list reactively
   private unsubscribe$ = new Subject<void>();
+  
   constructor(private fb: FormBuilder,  private bookManager: BookManagerService,   private route: ActivatedRoute ) {
     this.bookForm = this.fb.group({
       title: ['', Validators.required],
@@ -28,6 +30,13 @@ export class BookFormComponent {
       pubDate: ['', Validators.required],
       genre: ['', Validators.required]
     });    
+  }
+
+  canExit(): boolean {
+    if (  this.bookForm.value.title || this.bookForm.value.author ||  this.bookForm.value.isbn ||  this.bookForm.value.price ||  this.bookForm.value.pubDate ||  this.bookForm.value.genre) {
+      return confirm('Are you sure you want to leave?');
+    }
+    return true;
   }
 
 ngOnInit(): void {
