@@ -26,30 +26,9 @@ export class BookListComponent implements OnInit, OnDestroy {
       });
   }
 
-  
-  
-  
   deleteBookClicked(bookIsbn: number) {
     this.bookManager.deleteBook(bookIsbn.toString());
   }
-
-  // editBookClicked(bookIsbn: number) {
-  //   const book = this.booksToDisplay.find(b => b.isbn === bookIsbn);
-  //   if (book) {
-  //     this.bookForm.setValue({
-  //       title: book.title,
-  //       author: book.author,
-  //       isbn: book.isbn,
-  //       price: book.price,
-  //       pubDate: this.formatDate(book.pubDate),
-  //       genre: book.genre
-  //     });
-
-  //     this.deleteBookClicked(book.isbn); // Remove the book from the list
-  //   } else {
-  //     console.error('Book not found for editing:', bookIsbn);
-  //   }
-  // }
 
   ngOnDestroy(): void {
     this.unsubscribe$.next();
