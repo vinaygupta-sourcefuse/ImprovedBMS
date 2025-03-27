@@ -13,38 +13,53 @@
       <form [formGroup]="bookForm">
         <div class="form-group">
           <label for="title">Book Title</label>
-          <input type="text" id="title" formControlName="title" placeholder="Enter book title" required>
+          <input type="text" id="title" formControlName="title" placeholder="Enter book title">
+        <div *ngIf="bookForm.get('title')?.errors?.['required'] && (bookForm.get('title')?.dirty || bookForm.get('title')?.touched)" class="error-message">
+          ⚠ Title is required.
+        </div>
         </div>
   
         <div class="form-group">
           <label for="author">Author</label>
-          <input type="text" id="author" formControlName="author" placeholder="Enter author name" required>
+          <input type="text" id="author" formControlName="author" placeholder="Enter author name">
+        <div *ngIf="bookForm.get('author')?.errors?.['required'] && (bookForm.get('author')?.dirty || bookForm.get('author')?.touched)" class="error-message">
+          ⚠ Author is required.
+        </div>
         </div>
   
         <div class="form-group">
           <label for="isbn">ISBN</label>
-          <input type="number" id="isbn" formControlName="isbn" placeholder="Enter ISBN number" required pattern="\d*">
-          <div *ngIf="bookForm.get('isbn')?.invalid && (bookForm.get('isbn')?.dirty || bookForm.get('isbn')?.touched)" class="error-message">
+            <input type="number" id="isbn" formControlName="isbn" placeholder="Enter ISBN number" [disabled]="isEditMode">
+          <div *ngIf="bookForm.get('isbn')?.errors?.['required'] && (bookForm.get('isbn')?.dirty || bookForm.get('isbn')?.touched)" class="error-message">
+            ⚠ ISBN is required.
+          </div>
+          <div *ngIf="bookForm.get('isbn')?.errors?.['pattern'] && (bookForm.get('isbn')?.dirty || bookForm.get('isbn')?.touched)" class="error-message">
             ⚠ ISBN must be a number.
           </div>
         </div>
   
         <div class="form-group">
           <label for="price">Price</label>
-          <input type="number" id="price" formControlName="price" placeholder="Enter Price" required pattern="\d*">
-          <div *ngIf="bookForm.get('price')?.invalid && (bookForm.get('price')?.dirty || bookForm.get('price')?.touched)" class="error-message">
+          <input type="number" id="price" formControlName="price" placeholder="Enter Price">
+          <div *ngIf="bookForm.get('price')?.errors?.['required'] && (bookForm.get('price')?.dirty || bookForm.get('price')?.touched)" class="error-message">
+            ⚠ Price is required.
+          </div>
+          <div *ngIf="bookForm.get('price')?.errors?.['pattern'] && (bookForm.get('price')?.dirty || bookForm.get('price')?.touched)" class="error-message">
             ⚠ Price must be a number.
           </div>
         </div>
   
         <div class="form-group">
           <label for="pubDate">Publication Date</label>
-          <input type="date" id="pubDate" formControlName="pubDate" required>
+          <input type="date" id="pubDate" formControlName="pubDate">
+          <div *ngIf="bookForm.get('pubDate')?.errors?.['required'] && (bookForm.get('pubDate')?.dirty || bookForm.get('pubDate')?.touched)" class="error-message">
+            ⚠ Publication date is required.
+          </div>
         </div>
   
         <div class="form-group">
           <label for="genre">Genre</label>
-          <select id="genre" formControlName="genre" required>
+          <select id="genre" formControlName="genre">
             <option value="">Select Genre</option>
             <option value="fiction">Fiction</option>
             <option value="non-fiction">Non-Fiction</option>
@@ -52,11 +67,14 @@
             <option value="fantasy">Fantasy</option>
             <option value="biography">Biography</option>
           </select>
+          <div *ngIf="bookForm.get('genre')?.errors?.['required'] && (bookForm.get('genre')?.dirty || bookForm.get('genre')?.touched)" class="error-message">
+            ⚠ Genre is required.
+          </div>
         </div>
         
         <!-- Modal Footer -->
         <div class="modal-footer">
-          <button type="button" class="btn-insert" (click)="submitForm();" routerLink="/book-management/listing">Insert</button>
+          <button type="button" class="btn-insert" (click)="submitForm();"  [disabled]="bookForm.invalid" routerLink="/book-management/listing">Insert</button>
         </div>
   
       </form>

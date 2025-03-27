@@ -21,13 +21,13 @@ export class BookFormComponent {
   private unsubscribe$ = new Subject<void>();
   constructor(private fb: FormBuilder,  private bookManager: BookManagerService,   private route: ActivatedRoute ) {
     this.bookForm = this.fb.group({
-      title: [''],
-      author: [''],
-      isbn: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],   
-      price: ['', [Validators.required, Validators.pattern('^[0-9]+$')]], 
-      pubDate: [''],
-      genre: ['']
-    });
+      title: ['', Validators.required],
+      author: ['', Validators.required],
+      isbn: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],   
+      price: ['', [Validators.required, Validators.pattern('^[0-9]*$')]], 
+      pubDate: ['', Validators.required],
+      genre: ['', Validators.required]
+    });    
   }
 
 ngOnInit(): void {
@@ -35,7 +35,7 @@ ngOnInit(): void {
 
   this.route.queryParams.subscribe(params => {
     const isbn = params['isbn'];
-  
+    
     if (Number(isbn)) {
       this.isEditMode = true;
       this.editBookIsbn = Number(isbn);
@@ -52,6 +52,7 @@ ngOnInit(): void {
             pubDate: this.formatDate(book.pubDate),
             genre: book.genre
           });
+          this.bookForm.get('isbn')?.disable(); // DISABLE here
         }
       });
     
@@ -60,6 +61,11 @@ ngOnInit(): void {
 }
 
 submitForm() {
+  if (this.bookForm.invalid) {
+    this.bookForm.markAllAsTouched(); // Force all validation messages to show
+    return;
+  }
+
   const book: Book = this.bookForm.value;
   if (this.isEditMode) {
     this.bookManager.editBook(this.editBookIsbn, book); // <- implement updateBook
