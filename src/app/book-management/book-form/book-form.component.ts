@@ -1,11 +1,10 @@
-import { Component, Output } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Book } from '../../models/book.model';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { BookManagerService } from 'src/app/services/book-manager.service';
-import { title } from 'process';
 
 @Component({
   selector: 'app-book-form',

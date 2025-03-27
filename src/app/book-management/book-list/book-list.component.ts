@@ -1,8 +1,7 @@
-import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Book } from 'src/app/models/book.model';
-import { BookService } from 'src/app/services/book.service';
 import { Subject } from 'rxjs';
-import { switchMap, takeUntil, tap } from 'rxjs/operators';
+import {  takeUntil } from 'rxjs/operators';
 import { BookManagerService } from 'src/app/services/book-manager.service';
 
 @Component({
