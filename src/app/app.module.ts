@@ -5,12 +5,13 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BookManagementBaseComponent } from './book-management-base/book-management-base.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { BookListComponent } from './book-management/book-list/book-list.component';
 import { CommonModule } from '@angular/common';
 import { BookFormComponent } from './book-management/book-form/book-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormUnsavedChangesGuard } from './guards/form-unsaved-changes.guard';
+import { AuthInterceptor } from './auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,11 @@ import { FormUnsavedChangesGuard } from './guards/form-unsaved-changes.guard';
     CommonModule,
     ReactiveFormsModule
   ],
-  providers: [FormUnsavedChangesGuard],
+  providers: [FormUnsavedChangesGuard, {
+    provide: HTTP_INTERCEPTORS,
+    useClass: AuthInterceptor,
+    multi: true
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
