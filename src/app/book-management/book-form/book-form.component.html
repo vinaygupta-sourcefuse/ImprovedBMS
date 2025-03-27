@@ -23,7 +23,7 @@
   
         <div class="form-group">
           <label for="isbn">ISBN</label>
-          <input type="text" id="isbn" formControlName="isbn" placeholder="Enter ISBN number" required pattern="\d*">
+          <input type="number" id="isbn" formControlName="isbn" placeholder="Enter ISBN number" required pattern="\d*">
           <div *ngIf="bookForm.get('isbn')?.invalid && (bookForm.get('isbn')?.dirty || bookForm.get('isbn')?.touched)" class="error-message">
             ⚠ ISBN must be a number.
           </div>
@@ -31,7 +31,7 @@
   
         <div class="form-group">
           <label for="price">Price</label>
-          <input type="text" id="price" formControlName="price" placeholder="Enter Price" required pattern="\d*">
+          <input type="number" id="price" formControlName="price" placeholder="Enter Price" required pattern="\d*">
           <div *ngIf="bookForm.get('price')?.invalid && (bookForm.get('price')?.dirty || bookForm.get('price')?.touched)" class="error-message">
             ⚠ Price must be a number.
           </div>

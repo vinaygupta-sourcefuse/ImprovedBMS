@@ -15,7 +15,7 @@ export class BookFormComponent {
   
  
   isEditMode = false;
-  editBookIsbn = '';
+  editBookIsbn !:  number;
   bookForm: FormGroup;
   books$ = new Observable<Book[]>(); // Store book list reactively
   private unsubscribe$ = new Subject<void>();
@@ -23,8 +23,8 @@ export class BookFormComponent {
     this.bookForm = this.fb.group({
       title: [''],
       author: [''],
-      isbn: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],   
-      price: ['', [Validators.required, Validators.pattern('^[0-9]*$')]], 
+      isbn: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],   
+      price: ['', [Validators.required, Validators.pattern('^[0-9]+$')]], 
       pubDate: [''],
       genre: ['']
     });
@@ -35,13 +35,14 @@ ngOnInit(): void {
 
   this.route.queryParams.subscribe(params => {
     const isbn = params['isbn'];
-    if (isbn) {
+  
+    if (Number(isbn)) {
       this.isEditMode = true;
-      this.editBookIsbn = isbn;
+      this.editBookIsbn = Number(isbn);
       this.bookManager.books$
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe(books => {
-        const book = books.find(b => b.isbn === isbn);
+        const book = books.find(b => b.isbn === +isbn);
         if (book) {
           this.bookForm.setValue({
             title: book.title,

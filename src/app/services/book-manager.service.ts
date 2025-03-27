@@ -31,7 +31,7 @@ export class BookManagerService {
       .subscribe();
   }
 
-  editBook(isbn: string, updatedBook: Book): void {
+  editBook(isbn: number, updatedBook: Book): void {
     this.bookService.updateBook(isbn, updatedBook)
       .pipe(
         switchMap(() => this.bookService.getBooks()),
