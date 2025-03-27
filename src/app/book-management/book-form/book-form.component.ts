@@ -1,10 +1,10 @@
 import { Component, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { EventEmitter } from '@angular/core';
 import { Book } from '../../models/book.model';
 import { Observable, Subject } from 'rxjs';
-import { BookService } from '../../services/book.service';
-import { switchMap, tap, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
+import { ActivatedRoute } from '@angular/router';
+import { BookManagerService } from 'src/app/services/book-manager.service';
 
 @Component({
   selector: 'app-book-form',
@@ -13,14 +13,13 @@ import { switchMap, tap, takeUntil } from 'rxjs/operators';
 })
 export class BookFormComponent {
   
-  @Output() booksChanged = new EventEmitter<Book[]>();
-  
-
+ 
+  isEditMode = false;
+  editBookIsbn = '';
   bookForm: FormGroup;
-  books$ = new Subject<Book[]>(); // Store book list reactively
-  public unsubscribe$ = new Subject<void>(); // For unsubscribing Observables
-
-  constructor(private fb: FormBuilder, private bookService: BookService) {
+  books$ = new Observable<Book[]>(); // Store book list reactively
+  private unsubscribe$ = new Subject<void>();
+  constructor(private fb: FormBuilder,  private bookManager: BookManagerService,   private route: ActivatedRoute ) {
     this.bookForm = this.fb.group({
       title: [''],
       author: [''],
@@ -31,81 +30,62 @@ export class BookFormComponent {
     });
   }
 
-  ngOnInit(): void {
-    this.loadBooks(); // Initial load
-  }
+ngOnInit(): void {
+  this.bookManager.loadBooks();
 
-  loadBooks() {
-    this.bookService.getBooks()
-      .pipe(
-        tap(books => {
-          console.log('Books from server:', books); // ✅ Debugging
-          this.books$.next(books);
-          this.booksChanged.emit(books); // Emit event properly
-          console.log('Books emitted successfully'); // ✅ Corrected logging
-        }),
-        takeUntil(this.unsubscribe$)
-      )
-      .subscribe({
-        next: () => console.log('Books loaded successfully'),
-        error: (err) => console.error('Error loading books:', err) // ✅ Debug error
+  this.route.queryParams.subscribe(params => {
+    const isbn = params['isbn'];
+    if (isbn) {
+      this.isEditMode = true;
+      this.editBookIsbn = isbn;
+      this.bookManager.books$
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(books => {
+        const book = books.find(b => b.isbn === isbn);
+        if (book) {
+          this.bookForm.setValue({
+            title: book.title,
+            author: book.author,
+            isbn: book.isbn,
+            price: book.price,
+            pubDate: this.formatDate(book.pubDate),
+            genre: book.genre
+          });
+        }
       });
-
-      return this.books$;
+    
+    }
+  });
 }
 
-
-  addBook() {
-    const book: Book = this.bookForm.value;
-
-    this.bookService.postBook(book)
-      .pipe(
-        switchMap(() => this.bookService.getBooks()), // Refresh list after adding
-        tap(books => {
-        
-          // this.booksChanged.emit(books);
-          this.clearForm();
-        }),
-        takeUntil(this.unsubscribe$)
-      )
-      .subscribe();
+submitForm() {
+  const book: Book = this.bookForm.value;
+  if (this.isEditMode) {
+    this.bookManager.editBook(this.editBookIsbn, book); // <- implement updateBook
+  } else {
+    this.bookManager.addBook(book);
   }
+  this.clearForm();
+}
 
-  // removeBook(bookId: any) {
-  //   this.bookService.deleteBook(bookId.toString())
-  //     .pipe(
-  //       switchMap(() => this.bookService.getBooks()), // Refresh list after deletion
-  //       tap(books => {
-        
-  //         this.booksChanged.emit(books);
-  //       }),
-  //       takeUntil(this.unsubscribe$)
-  //     )
-  //     .subscribe();
-  // }
+addBook() {
+  const book: Book = this.bookForm.value;
+  this.bookManager.addBook(book);
+  this.clearForm();
+}
 
-  // editBook(book: Book) {
-  //   this.bookForm.setValue({
-  //     title: book.title,
-  //     author: book.author,
-  //     isbn: book.isbn,
-  //     price: book.price,
-  //     pubDate: this.formatDate(book.pubDate),
-  //     genre: book.genre
-  //   });
+formatDate(dateString: string): string {
+    const dateRegex = /^(\d{4})-(\d{2})-(\d{2})$/;
+    const match = dateString.match(dateRegex);
 
-  //   //instead of creating a put request we can remove the book and add it again
-  //   this.removeBook(book.isbn); // Remove the book from the list
-  
-  // }
+    if (!match) {
+      console.error('Invalid date string format:', dateString); // Debugging invalid date
+      return ''; // Return an empty string for invalid formats
+    }
 
-  formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
+    const [_, year, month, day] = match;
     return `${year}-${month}-${day}`;
-  }
+}
 
   clearForm() {
     this.bookForm.reset({
@@ -118,4 +98,8 @@ export class BookFormComponent {
     });
   }
 
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
 }

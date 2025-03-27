@@ -20,6 +20,10 @@ export class BookService {
     return this.http.post<Book>(this.baseUrl, book);
   }
 
+  updateBook(id: string, book: Book): Observable<Book> {
+    return this.http.put<Book>(`${this.baseUrl}/${id}`, book);
+  }
+
   deleteBook(id: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }

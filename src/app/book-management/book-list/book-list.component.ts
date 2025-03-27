@@ -3,6 +3,7 @@ import { Book } from 'src/app/models/book.model';
 import { BookService } from 'src/app/services/book.service';
 import { Subject } from 'rxjs';
 import { switchMap, takeUntil, tap } from 'rxjs/operators';
+import { BookManagerService } from 'src/app/services/book-manager.service';
 
 @Component({
   selector: 'app-book-list',
@@ -10,46 +11,26 @@ import { switchMap, takeUntil, tap } from 'rxjs/operators';
   styleUrls: ['./book-list.component.scss']
 })
 export class BookListComponent implements OnInit, OnDestroy {
-  // @Output() onRemoveBook = new EventEmitter<number>();
-  // @Output() onEditBook = new EventEmitter<number>();
- 
-
+  
   booksToDisplay: Book[] = []; // Properly initialized
   private unsubscribe$ = new Subject<void>(); // For unsubscribing Observables
 
-  constructor(private bookService: BookService) {}
+  constructor(private bookManager: BookManagerService) {}
 
   ngOnInit(): void {
-    this.loadBooks();
-  }
-
-  loadBooks() {
-    this.bookService.getBooks()
-      .pipe(
-        tap(response => {
-          this.booksToDisplay = response; // Ensure booksToDisplay is always an array
-        }) 
-      )
-      .subscribe({
-        next: () => console.log('Books updated in UI:', this.booksToDisplay),
-        error: (err) => console.error('Error loading books:', err)
+    this.bookManager.loadBooks();
+    this.bookManager.books$
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(books => {
+        this.booksToDisplay = books;
       });
   }
+
+  
   
   
   deleteBookClicked(bookIsbn: number) {
-    this.bookService.deleteBook(bookIsbn.toString())
-      .pipe(
-        switchMap(() => this.bookService.getBooks()), // Refresh list after deletion
-        tap(books => {
-          this.booksToDisplay = books; // Update the displayed books
-        }),
-        takeUntil(this.unsubscribe$)
-      )
-      .subscribe({
-        next: () => console.log('Book deleted and list refreshed'),
-        error: (err) => console.error('Error deleting book:', err)
-      });
+    this.bookManager.deleteBook(bookIsbn.toString());
   }
 
   // editBookClicked(bookIsbn: number) {
